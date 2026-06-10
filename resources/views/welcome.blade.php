@@ -312,7 +312,7 @@
 
         // NOMBERTO Esta sección de planes empresariales está oculta por ahora, pero se puede activar fácilmente eliminando el atributo "hidden" y ajustando los contenidos según sea necesario.
 
-        <section class="section" hidden>
+        <section class="section" hidden style="display:none!important;">
             <div class="container">
                 <div class="section-title aos" data-aos="fade-up">
                     <h2>Planes empresariales</h2>
