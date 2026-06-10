@@ -311,13 +311,14 @@
         </section>
 
         // NOMBERTO Esta sección de planes empresariales está oculta por ahora, pero se puede activar fácilmente eliminando el atributo "hidden" y ajustando los contenidos según sea necesario.
+
         <section class="section" hidden>
             <div class="container">
                 <div class="section-title aos" data-aos="fade-up">
                     <h2>Planes empresariales</h2>
                     <p>Paquetes diseñados para dar respuesta inmediata a tu nivel de proyecto y presupuesto.</p>
                 </div>
-                <div class="grid-3">
+                <div class="grid-3" hidden>
                     <article class="plan-card aos" data-aos="fade-up" data-aos-delay="120">
                         <h3>Base</h3>
                         <strong>S/ 2,200</strong>
