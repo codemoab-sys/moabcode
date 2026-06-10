@@ -310,7 +310,8 @@
             </div>
         </section>
 
-        <section class="section">
+        // NOMBERTO Esta sección de planes empresariales está oculta por ahora, pero se puede activar fácilmente eliminando el atributo "hidden" y ajustando los contenidos según sea necesario.
+        <section class="section" hidden>
             <div class="container">
                 <div class="section-title aos" data-aos="fade-up">
                     <h2>Planes empresariales</h2>
@@ -400,21 +401,38 @@
                             <span class="tag">Consultoría tecnológica</span>
                         </div>
                     </article>
-                    <form class="contact-card contact-form aos" data-aos="fade-up" data-aos-delay="180" action="mailto:ventas@moabcode.com" method="post" enctype="text/plain">
+                    <form id="quoteForm" class="contact-card contact-form aos" data-aos="fade-up" data-aos-delay="180" action="{{ route('clientescotizaron.store') }}" method="post">
+                        @csrf
+                        <div id="quoteMessage"></div>
+                        @if(session('status'))
+                            <div class="alert alert-success" style="margin-bottom:16px; padding:14px 18px; background:#e6ffed; border:1px solid #a7f3d0; color:#065f46; border-radius:16px;">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger" style="margin-bottom:16px; padding:14px 18px; background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:16px;">
+                                <strong>Por favor corrige los siguientes campos:</strong>
+                                <ul style="margin:8px 0 0 16px; padding:0; list-style: disc;">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <label for="nombre">Nombre completo
-                            <input id="nombre" name="Nombre" type="text" placeholder="Tu nombre" required>
+                            <input id="nombre" name="nombre" type="text" placeholder="Tu nombre" value="{{ old('nombre') }}" required>
                         </label>
                         <label for="empresa">Empresa
-                            <input id="empresa" name="Empresa" type="text" placeholder="Tu empresa" required>
+                            <input id="empresa" name="empresa" type="text" placeholder="Tu empresa" value="{{ old('empresa') }}" required>
                         </label>
                         <label for="telefono">Teléfono
-                            <input id="telefono" name="Teléfono" type="tel" placeholder="+51 9xx xxx xxx" required>
+                            <input id="telefono" name="telefono" type="tel" placeholder="+51 9xx xxx xxx" value="{{ old('telefono') }}" required>
                         </label>
                         <label for="correo">Correo electrónico
-                            <input id="correo" name="Correo" type="email" placeholder="tu@empresa.com" required>
+                            <input id="correo" name="correo" type="email" placeholder="tu@empresa.com" value="{{ old('correo') }}">
                         </label>
                         <label for="mensaje">Mensaje
-                            <textarea id="mensaje" name="Mensaje" placeholder="Cuéntanos tu proyecto" required></textarea>
+                            <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos tu proyecto" required>{{ old('mensaje') }}</textarea>
                         </label>
                         <button class="btn btn-primary" type="submit">Enviar solicitud</button>
                     </form>
@@ -500,6 +518,44 @@
         if (backToTop) {
             backToTop.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        const quoteForm = document.getElementById('quoteForm');
+        const quoteMessage = document.getElementById('quoteMessage');
+
+        if (quoteForm) {
+            quoteForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                quoteMessage.innerHTML = '';
+
+                const formData = new FormData(quoteForm);
+                const token = quoteForm.querySelector('input[name="_token"]').value;
+
+                try {
+                    const response = await fetch(quoteForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const errors = data.errors ? Object.values(data.errors).flat() : [data.message || 'Ocurrió un error.'];
+                        quoteMessage.innerHTML = `<div style="margin-bottom:16px; padding:14px 18px; background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:16px;"><strong>Por favor corrige los siguientes campos:</strong><ul style="margin:8px 0 0 16px; padding:0; list-style: disc;">${errors.map(error => `<li>${error}</li>`).join('')}</ul></div>`;
+                        return;
+                    }
+
+                    quoteMessage.innerHTML = `<div style="margin-bottom:16px; padding:14px 18px; background:#e6ffed; border:1px solid #a7f3d0; color:#065f46; border-radius:16px;">${data.message}</div>`;
+                    quoteForm.reset();
+                } catch (error) {
+                    quoteMessage.innerHTML = `<div style="margin-bottom:16px; padding:14px 18px; background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:16px;">Ocurrió un error al enviar la solicitud. Intenta de nuevo.</div>`;
+                }
             });
         }
     </script>
