@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+	--brand-primary: #0A1F44; /* Azul Marino (MOAB) */
+	--brand-accent: #C9A227;  /* Dorado Elegante (CODE) */
+	--brand-on-primary: #ffffff;
+}
